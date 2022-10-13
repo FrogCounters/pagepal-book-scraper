@@ -1,7 +1,6 @@
 import requests
 import os
-
-
+import json
 
 # make_url = lambda x: lambda y: "/" + x + y
 # detect_maker = make_url("detect")
@@ -47,6 +46,9 @@ class Analyzer():
     def api_esg_sentiment(self):
         return self._make_url_detector("esg-sentiment/")
     
+    def api_sentiment_full(self): #sentiment full
+        return self._make_url_analyzer_specific(context="standard/", analysis="sentiment/")
+    
     @_result_decorator
     def _get_request(self, url):
         self.target = url
@@ -69,6 +71,10 @@ class Analyzer():
         inp = {"document":{"text": input_text}}
         return self._post_request(self.api_hate_speech(), inp)
     
+    def sentiment_full(self, input_text):
+        inp = {"document":{"text": input_text}}
+        return self._post_request(self.api_sentiment_full(), inp)
+
     def contexts(self):
         return self._get_request(self._make_url_contexts())
 
@@ -78,11 +84,22 @@ def test(analyzer):
     print(test.status_code)
 
 def main():
-    input_text = "Michael Jordan was one of the best basketball players of all time. Scoring was Jordan stand-out skill, but he still holds a defensive NBA record, with eight steals in a half."
+    testing = False
+    input_text = "Michael Jordan is an absolute nigger."
 
     expert_ai = Analyzer()
-    if True:
+
+    if testing:
         test(expert_ai)
+
+    hateful_jordan = expert_ai.sentiment_full(input_text)
+
+    with open("output.json", "w", encoding="utf-8") as f:
+        json.dump(hateful_jordan.json(), f, indent=4)
+
+    # print(hateful_jordan.url)
+    # print(hateful_jordan.json())
+    # print(hateful_jordan.status_code)
     
     # print(expert_ai.target)
     return
