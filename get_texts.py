@@ -14,7 +14,7 @@ EAI = Analyzer()
 def get_urls(urls = None): #gets lits of urls to access
     if not urls:
         # urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm"]
-        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm", r"https://www.gutenberg.org/cache/epub/58550/pg58550-images.html"]
+        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm", r"https://www.gutenberg.org/files/32662/32662-h/32662-h.htm"]
     return urls
 
 def _txt_clean(text): #cleans nicely encoded text from get_txt
