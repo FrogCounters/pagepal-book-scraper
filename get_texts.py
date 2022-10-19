@@ -112,7 +112,7 @@ def _save(title, url, text, emotions, author, main_img = ""):
         for para in text:
             clean_paras.append(para.replace("\r\n", " "))
 
-            f.write(para.replace("\r\n", " "))
+            f.write(para.replace("\r\n", " ") + "\n")
 
     if os.path.exists(jsonpath):
         return

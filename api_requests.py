@@ -105,7 +105,7 @@ class Analyzer():
     def split_para(self, paras):
         sentences = []
         for para in paras:
-            print(para)
+            # print(para)
             change = 0
             raw_dis = self.disambiguation(para).json()["data"]
             for sentence in raw_dis["sentences"]:
