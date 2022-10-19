@@ -13,8 +13,8 @@ EAI = Analyzer()
 
 def get_urls(urls = None): #gets lits of urls to access
     if not urls:
-        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm"]
-        # urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm"]
+        # urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm"]
+        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm"]
     return urls
 
 def _txt_clean(text): #cleans nicely encoded text from get_txt
@@ -71,12 +71,11 @@ def get_single_html(source):
             break
         # Skip Blank Row Paragraphs
         if flag_:
-            if not tag.text.strip() or tag.text == "<br/>":
+            if tag.text.replace("/r/n", "").strip() and not tag.text == "<br/>":
+                res = tag.text
                 if res.strip():
                     corpus.append(res)
                 res = ""
-            else:
-                res += tag.text
         if not title_found:
             if "Title:" in tag.text:
                 title = tag.text.lstrip("Title:").strip()
