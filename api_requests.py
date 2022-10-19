@@ -105,9 +105,17 @@ class Analyzer():
     def split_para(self, paras):
         sentences = []
         for para in paras:
-            print(para)
+            
             change = 0
-            raw_dis = self.disambiguation(para).json()["data"]
+            try:
+                raw_dis = self.disambiguation(para).json()["data"]
+            except Exception as e:
+                print(e)
+                input("Enter to continue debug:")
+                print("Error line:" + para)
+                print(self.disambiguation(para).status_code)
+                input("Enter to continue debug (ends prog):")
+                raise(e)
             for sentence in raw_dis["sentences"]:
                 start = sentence["start"]
                 end = sentence["end"]
@@ -125,7 +133,25 @@ class Analyzer():
     def emotions_from_list(self, xs):
         emotions = []
         for line in xs:
-            raw_emotions = self.emotions(line).json()
+            try:
+                r = self.emotions(line)
+                raw_emotions = r.json()
+            except requests.exceptions.JSONDecodeError:
+                print("Error line:" + line)
+                input("Press enter to reping the API")
+                r = self.emotions(line)
+                raw_emotions = r.json()
+            except Exception as e:
+                print(e)
+                input("Enter to continue debug:")
+                print("Error line:" + line)
+                print(r.status_code)
+                print("Content")
+                print(r.content)
+                print("Request")
+                print(r)
+                input("Enter to continue debug (ends prog):")
+                raise(e)
             emo_string = ""
             for category in raw_emotions["data"]["categories"]:
                 emo_string += category["label"] + ","

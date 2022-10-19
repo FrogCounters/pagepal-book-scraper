@@ -14,7 +14,7 @@ EAI = Analyzer()
 def get_urls(urls = None): #gets lits of urls to access
     if not urls:
         # urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm"]
-        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm"]
+        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm", r"https://www.gutenberg.org/cache/epub/58550/pg58550-images.html"]
     return urls
 
 def _txt_clean(text): #cleans nicely encoded text from get_txt
@@ -51,7 +51,7 @@ def save_txt(data, target = "texts/"):
 
 def get_single_html(source):
     
-    soup = BeautifulSoup(urlopen(source), features='lxml')
+    soup = BeautifulSoup(urlopen(source), features="xml")
     corpus = []
     title = ""
     author = ""
@@ -111,7 +111,7 @@ def _save(title, url, text, emotions, author, main_img = ""):
         for para in text:
             clean_paras.append(para.replace("\r\n", " "))
 
-            f.write(para.replace("\r\n", " "))
+            f.write(para.replace("\r\n", " ") + "\n")
 
     if os.path.exists(jsonpath):
         return
