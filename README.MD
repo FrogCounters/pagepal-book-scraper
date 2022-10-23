@@ -1,6 +1,6 @@
 To use, change these system environment variables to have your expert ai login:
-"ExpertAiUser": $YOUR EAI USERNAME$
-"ExpertAiPw": $YOUR EAI PW$
+"ExpertAiUser": YOUR_EAI_USERNAME
+"ExpertAiPw": YOUR_EAI_PW
 Alternatively you could just edit these directly into the python script on lines 4 and 5
 login = //YOUR EAI USERNAME HERE
 pw = //YOUR EAI PW HERE
