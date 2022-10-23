@@ -2,8 +2,11 @@ To use, change these system environment variables to have your expert ai login:
 "ExpertAiUser": YOUR_EAI_USERNAME
 "ExpertAiPw": YOUR_EAI_PW
 Alternatively you could just edit these directly into the python script on lines 4 and 5
+
 login = //YOUR EAI USERNAME HERE
+
 pw = //YOUR EAI PW HERE
+
 then run get_auth.py (you should have a new txt file with your secret)
 after that you can just run get_texts.py and new analysis files should appear
 
