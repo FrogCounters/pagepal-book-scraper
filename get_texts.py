@@ -55,6 +55,7 @@ def get_single_html(source):
     corpus = []
     title = ""
     author = ""
+    img = ""
     flag_ = False
     title_found = False
     author_found = False
@@ -84,20 +85,30 @@ def get_single_html(source):
             if "Author:" in tag.text:
                 author = tag.text.lstrip("Author:").strip()
                 author_found = True
+    
+    # Find First Image
+    for tag in soup.findAll('img'):
+        if not img:
+            try:
+                img = os.path.join(os.path.dirname(source), tag.attrs['src'])
+
+            except Exception as e:
+                raise e
 
     
-    return (title, author, corpus, source)
+    return (title, author, corpus, source, img)
 
 def save_html(data, target = "texts/"):
     title = data[0]
     author = data[1]
     corpus = data[2]
     url = data[3]
+    img = data[4]
 
     if not os.path.isdir(target):
         os.mkdir(target)
     
-    _save(title, url, corpus, [], author)
+    _save(title, url, corpus, [], author, img)
 
     return
 
