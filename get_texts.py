@@ -56,6 +56,8 @@ def get_single_html(source):
     title = ""
     author = ""
     img = ""
+    hate_speech = []
+
     flag_ = False
     title_found = False
     author_found = False
@@ -96,7 +98,7 @@ def get_single_html(source):
                 raise e
 
     
-    return (title, author, corpus, source, img)
+    return (title, author, corpus, source, img, hate_speech)
 
 def save_html(data, target = "texts/"):
     title = data[0]
@@ -104,15 +106,16 @@ def save_html(data, target = "texts/"):
     corpus = data[2]
     url = data[3]
     img = data[4]
+    hate_speech = data[5]
 
     if not os.path.isdir(target):
         os.mkdir(target)
     
-    _save(title, url, corpus, [], author, img)
+    _save(title, url, corpus, [], hate_speech, author, img)
 
     return
 
-def _save(title, url, text, emotions, author, main_img = ""):
+def _save(title, url, text, emotions, hate_speech, author, main_img = ""):
 
     txtpath = os.path.join(TARGET, title + ".txt")
     jsonpath = os.path.join(ANALYSIS, title + ".json")
@@ -120,7 +123,7 @@ def _save(title, url, text, emotions, author, main_img = ""):
 
     with open(txtpath, "w", encoding="utf-8") as f:
         for para in text:
-            clean_paras.append(para.replace("\r\n", " "))
+            clean_paras.append(para.replace("\r\n", " ") + "\n")
 
             f.write(para.replace("\r\n", " ") + "\n")
 
@@ -129,13 +132,14 @@ def _save(title, url, text, emotions, author, main_img = ""):
 
     sentences = EAI.split_para(clean_paras)
     emotions = EAI.emotions_from_list(sentences)
-
+    hate_speech = list(map(EAI.hate_from_string, sentences))
 
     result_dic = {
         "title": title,
         "url": url,
         "text": sentences,
         "emotions": emotions,
+        "hate_speech": hate_speech,
         "author": author,
         "main_img": main_img
     }

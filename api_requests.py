@@ -1,7 +1,7 @@
 import requests
 import os
 import json
-
+from pprint import pprint
 # make_url = lambda x: lambda y: "/" + x + y
 # detect_maker = make_url("detect")
 # r = requests.post("https://nlapi.expert.ai/v2/detect/hate-speech/en", headers=header, json=input)
@@ -109,6 +109,11 @@ class Analyzer():
             change = 0
             try:
                 raw_dis = self.disambiguation(para).json()["data"]
+            except requests.exceptions.JSONDecodeError:
+                print("encountered JSONDecodeError while disambiguating")
+                print("Para:", para)
+                input("Press enter to reattempt")
+                raw_dis = self.disambiguation(para).json()["data"]
             except Exception as e:
                 print(e)
                 input("Enter to continue debug:")
@@ -138,7 +143,7 @@ class Analyzer():
                 raw_emotions = r.json()
             except requests.exceptions.JSONDecodeError:
                 print("Error line:" + line)
-                input("Press enter to reping the API")
+                input("Press enter to re-ping the API")
                 r = self.emotions(line)
                 raw_emotions = r.json()
             except Exception as e:
@@ -159,87 +164,63 @@ class Analyzer():
             emotions.append(emo_string)
 
         return emotions
+    
+    def hate_from_string(self, sentence):
+        hate = ""
+        if not sentence.strip():
+            return hate
+        r = self.hate_speech(sentence.strip())
+        try:
+            raw_hate_speech = r.json()["data"]
+        except requests.exceptions.JSONDecodeError:
+            print("Error line:", sentence)
+            input("Press enter to re-ping the API")
+            r = self.hate_speech(sentence.strip())
+            raw_hate_speech = r.json()["data"]
+        
+        for category in raw_hate_speech["categories"]:
+            hate += category["label"] + ","
+
+        return hate
 
 
-def test(analyzer):
-    test = analyzer.contexts()
-    print(test.text)
-    print(test.status_code)
+def test(analyzer: Analyzer, text: str):
+    test_context = False
+    test_hate_speech = True
+
+    if test_context:
+        res = analyzer.contexts()
+        print("---Contexts---")
+        pprint(res.text)
+        print("Status code:", res.status_code)
+        print("---Contexts---")
+        input()
+    
+    if test_hate_speech:
+        res = analyzer.hate_speech(text)
+        print("---Hate Speech---")
+        # print("Text:", res.text)
+        print("Categories")
+        pprint(res.json()["data"]["categories"])
+        print("Status code:", res.status_code)
+        print("---Hate Speech---")
+        input()
+
+
+
 
 def make_raw_filename(title):
     return title + ".json"
 
 def main():
     testing = False
-    # input_text = "The happy black cat was a very happy cat who lead a happy life as a happy little cat. The happy black cat could be happy in a hat since his happy little home was black just like the cat." #testing purposes
-
+    input_text = "I hate niggas."
     expert_ai = Analyzer()
-
-    books = {}
-
-    for file in os.listdir(r"./texts"):
-        if file.endswith(".json"):
-            title = file.rstrip(".txt").rstrip(".json")
-            if os.path.exists(os.path.join("raw_analysis", make_raw_filename(title))):
-                print(title + " already exists in raw_analysis/")
-                continue
-
-
-
-            books[title] = {"sentences":[], "emotions":[]}
-            with open(os.path.join(r"texts", file), "r", encoding = "utf-8") as f:
-                for line in f:                    
-                    try:
-                        debug = []
-                        raw_line = line.strip()
-                        raw_dis = expert_ai.disambiguation(raw_line).json()["data"]
-                        for sentence in raw_dis["sentences"]:
-                            start = sentence["start"]
-                            end = sentence["end"]
-
-                            current_sentence = raw_line[start:end]                    
-                            books[title]["sentences"].append(current_sentence)
-                            output = expert_ai.emotions(current_sentence)
-                            debug.append(output)
-                            output_emotions = output.json()
-                            emo_string = ""
-                            for category in output_emotions["data"]["categories"]:
-                                emo_string += category["label"] + ","
-
-                            books[title]["emotions"].append(emo_string)
-
-                    except Exception as e:
-                        print(e)
-                        print(expert_ai.target)
-                        print(debug[-1].status_code)
-                        print("input line was:" + raw_line)
-                        break
-            
-            with open(os.path.join("raw_analysis", make_raw_filename(title)), "w", encoding="utf-8") as f:
-                json.dump(books[title], f, indent=4)
-
-    
-
-
+  
     if testing:
-        test(expert_ai)
-
-    # hateful_jordan = expert_ai.emotions(input_text)
-
-
-    # with open("output_full_analysis.json", "w", encoding="utf-8") as f:
-    #     json.dump(hateful_jordan.json(), f, indent=4)
-
-    # with open("output_emotions.json", "w", encoding="utf-8") as f:
-    #     json.dump(hateful_jordan.json(), f, indent=4)
+        test(expert_ai, input_text)
     
-    # raw_data = hateful_jordan.json()
-
-    # print(hateful_jordan.url)
-    # emo_string = ""
-    # for category in raw_data["data"]["categories"]:
-    #     print(category["label"])
-    # print(hateful_jordan.status_code)
+    print(expert_ai.hate_from_string(input_text))
 
     return
 
