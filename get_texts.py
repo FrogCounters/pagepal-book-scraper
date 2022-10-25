@@ -14,7 +14,11 @@ EAI = Analyzer()
 def get_urls(urls = None): #gets lits of urls to access
     if not urls:
         # urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm"]
-        urls = [r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm", r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm", r"https://www.gutenberg.org/files/32662/32662-h/32662-h.htm"]
+        urls = [
+            r"https://www.gutenberg.org/files/18155/18155-h/18155-h.htm",
+            r"https://www.gutenberg.org/files/61852/61852-h/61852-h.htm",
+            r"https://www.gutenberg.org/files/32662/32662-h/32662-h.htm",
+            r"https://www.gutenberg.org/cache/epub/23625/pg23625-images.html"]
     return urls
 
 def _txt_clean(text): #cleans nicely encoded text from get_txt
@@ -80,11 +84,11 @@ def get_single_html(source):
                     corpus.append(res)
                 res = ""
         if not title_found:
-            if "Title:" in tag.text:
+            if "title:" in tag.text.lower():
                 title = tag.text.lstrip("Title:").strip()
                 title_found = True
         if not author_found:
-            if "Author:" in tag.text:
+            if "author:" in tag.text.lower():
                 author = tag.text.lstrip("Author:").strip()
                 author_found = True
     
@@ -92,7 +96,7 @@ def get_single_html(source):
     for tag in soup.findAll('img'):
         if not img:
             try:
-                img = os.path.join(os.path.dirname(source), tag.attrs['src'])
+                img = os.path.dirname(source) + "/" + str(tag.attrs['src'])
 
             except Exception as e:
                 raise e
