@@ -2,6 +2,7 @@ import requests
 import os
 import json
 from pprint import pprint
+import time
 # make_url = lambda x: lambda y: "/" + x + y
 # detect_maker = make_url("detect")
 # r = requests.post("https://nlapi.expert.ai/v2/detect/hate-speech/en", headers=header, json=input)
@@ -104,15 +105,20 @@ class Analyzer():
     
     def split_para(self, paras):
         sentences = []
+        total = len(paras)
+        counter = 0
         for para in paras:
-            
+            print("Splitting para", counter, "/", total)
+            counter += 1
             change = 0
             try:
                 raw_dis = self.disambiguation(para).json()["data"]
             except requests.exceptions.JSONDecodeError:
                 print("encountered JSONDecodeError while disambiguating")
                 print("Para:", para)
-                input("Press enter to reattempt")
+                print("Sleeping...")
+                time.sleep(2)
+                # input("Press enter to reattempt")
                 raw_dis = self.disambiguation(para).json()["data"]
             except Exception as e:
                 print(e)
@@ -130,20 +136,36 @@ class Analyzer():
                 change += 1
             
             #add blank line at the end of paragraph
-            if change > 0:
-                sentences[-1] = sentences[-1] + "\n"
+            sentences.append("\n")
+            # if change > 0:
+            #     sentences[-1] = sentences[-1] + "\n"
         
         return sentences
     
     def emotions_from_list(self, xs):
         emotions = []
+        counter = 0
+        total = len(xs)
         for line in xs:
+            emo_string = ""
+
+            # debug
+            print("Getting Emotions", counter, "/", total)
+            counter += 1
+
+            if not line.strip():
+                emotions.append(emo_string)
+                continue
+
             try:
                 r = self.emotions(line)
                 raw_emotions = r.json()
             except requests.exceptions.JSONDecodeError:
                 print("Error line:" + line)
-                input("Press enter to re-ping the API")
+                # input("Press enter to re-ping the API")
+                print("Request:", r)
+                print("Sleeping...")
+                time.sleep(2)
                 r = self.emotions(line)
                 raw_emotions = r.json()
             except Exception as e:
@@ -157,7 +179,7 @@ class Analyzer():
                 print(r)
                 input("Enter to continue debug (ends prog):")
                 raise(e)
-            emo_string = ""
+            
             for category in raw_emotions["data"]["categories"]:
                 emo_string += category["label"] + ","
 
@@ -167,6 +189,7 @@ class Analyzer():
     
     def hate_from_string(self, sentence):
         hate = ""
+        # print("Hating on sentence", sentence)
         if not sentence.strip():
             return hate
         r = self.hate_speech(sentence.strip())
@@ -174,7 +197,7 @@ class Analyzer():
             raw_hate_speech = r.json()["data"]
         except requests.exceptions.JSONDecodeError:
             print("Error line:", sentence)
-            input("Press enter to re-ping the API")
+            # input("Press enter to re-ping the API")
             r = self.hate_speech(sentence.strip())
             raw_hate_speech = r.json()["data"]
         
