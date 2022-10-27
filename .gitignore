@@ -2,5 +2,5 @@ token*
 firebase_token*
 output*.json
 tempCodeRunnerFile.py
-__pycache__*
+__pycache__/*
 get_gutenberg_htmls.py
