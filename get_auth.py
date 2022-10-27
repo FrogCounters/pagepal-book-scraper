@@ -3,6 +3,9 @@ import os
 
 login = os.environ["ExpertAiUser"]
 pw = os.environ["ExpertAiPw"]
+os.environ["EAI_USERNAME"] = login
+os.environ["EAI_PASSWORD"] = pw
+
 r = requests.post('https://developer.expert.ai/oauth2/token', json={'username': login, 'password': pw})
 
 with open("token.txt","w") as f:

@@ -3,13 +3,14 @@ from urllib.request import urlopen
 import requests
 import re
 import os
+import env
 source = r'https://www.gutenberg.org/ebooks/23625.txt.utf-8'
-TEXT_FOLDER = r"texts"
+DOWNLOAD_TXT_FOLDER = env.PLAIN_TXT_DIR
+TEXT_FOLDER = env.CLEANED_TXT_DIR
 
-# soup = BeautifulSoup(urlopen(source),'html.parser')
 def _txt_clean(text): #cleans nicely encoded text from get_txt
-    no_start = re.split("\*{3}.*PROJECT GUTENBERG EBOOK.*\*{3}", text)[1] #regex for matching ***START OF THE PROJECT GUTENBERG  ...*** this works for cats and kittens
-    clean_text = re.split("\*{3}.*PROJECT GUTENBERG EBOOK.*\*{3}", no_start)[0]
+    no_start = re.split("\*{3}.*START OF T[a-zA-Z]+ PROJECT GUTENBERG.*\n{0,3}.+\*{2}", text)[1] #regex for matching ***START OF THE PROJECT GUTENBERG  ...*** this works for cats and kittens
+    clean_text = re.split("\*{3}.*END OF T[a-zA-Z]+ PROJECT GUTENBERG.*\n{0,3}.+\*{2}", no_start)[0]
     return clean_text.replace("\r\n","\n")
 
 
@@ -22,29 +23,18 @@ def get_save_sentences(source, title):
     filename_raw = title + "_raw.txt"
     filename = title + ".txt"
 
-    with open(os.path.join(r"scraped_texts", filename_raw), "w", encoding=request.apparent_encoding) as f:
-        clean = _txt_clean(request.text)
-        print(clean, file=f)
+    with open(os.path.join(DOWNLOAD_TXT_FOLDER, filename_raw), "w", encoding=request.apparent_encoding) as f:
+        print(request.text, file=f)
 
+    clean = _txt_clean(request.text)
+    lines = clean.split("\n")
     with open(os.path.join(TEXT_FOLDER, filename), "w", encoding=request.apparent_encoding) as f:
-        lines = clean.split("\n")
-        # first_new_line = True
-        # second_new_line = True
-        
         for line in lines:
-            if None == re.search("\[.*Illustration.*\]", line):
-                if line:
-                    f.write(line + " ")
-                    first_new_line = True
-                    second_new_line = True
-                else:
-                    # if first_new_line:
-                    #     f.write("\n")
-                    #     first_new_line = False
-                    # elif second_new_line:
-                    #     f.write("\n")
-                    #     second_new_line = False
-                    f.write("\n")
+            line = re.sub("\[.*Illustration.*\]", "\n", line)
+            if line:
+                f.write(line + " ")
+            else:
+                f.write("\n")
     
     paragraphs = []
     with open(os.path.join(TEXT_FOLDER, filename), "r", encoding=request.apparent_encoding) as f:

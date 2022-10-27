@@ -1,17 +1,14 @@
-To use, change these system environment variables to have your expert ai login:
-"ExpertAiUser": YOUR_EAI_USERNAME
-"ExpertAiPw": YOUR_EAI_PW
-Alternatively you could just edit these directly into the python script on lines 4 and 5
+##Analysis Files
 
-login = //YOUR EAI USERNAME HERE
+The files here were designed for scraping books from the Gutenberg online repository. It uses direct calls to the Expert AI API weblinks to disambiguate and analyse these books. This data is then formatted and sent to the firebase for the website to publish it's catalogue of books. Hence, the running of this script is independent of the availability of the main website.
 
-pw = //YOUR EAI PW HERE
+This script can be run seperately to update the website's databse if so wished.
 
-then run get_auth.py (you should have a new txt file with your secret)
-after that you can just run get_texts.py and new analysis files should appear
+##Configuration
 
-api_requests.py contains the Analyzer class, which contains methods for calling the expertai api links directly and two other useful methods, one for splitting paragraphs into sentences using disambiguation, another for taking lists of strings and outputting lists of emotions.
+To run this script, make sure to have set input these variables into your system environment.
+EAI_USERNAME: "your expert ai account username"
+EAI_PASSWORD: "your expert ai account password"
 
-get_texts.py has a hardcoded list of urls, and uses get requests to retrieve their HTMLs, and parses it for text and book information. the api_requests methods are used to get information from these books. It outputs txt files for what the texts of the book looks like after parsing, and json files which will be used to send to the firebase.
-
-analyse_jsons.py retrieves the json files and uses the information to send post requests to our firebase. It makes use of firebase_bridge.py which contains the method for posting stories.
+Additionally, you must have your firebase token saved as a file in this folder named:
+firebase_token.json

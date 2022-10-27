@@ -72,11 +72,15 @@ class Analyzer():
         self.target = url
         self.current_result = requests.post(url, headers=self.header, json=data)
     
-    def get_auth_token(self, sys_env_key = "ExpertAiToken"):
-        token = ""
-        with open("token.txt","r") as f:
-            for line in f:
-                token += line.strip()
+    def get_auth_token(self, env_login_key = "EAI_USERNAME", env_pw_key = "EAI_PASSWORD"):
+        
+        r = requests.post('https://developer.expert.ai/oauth2/token', json={'username': os.environ[env_login_key], 'password': os.environ[env_pw_key]})
+        
+        if not r.text or r.status_code != 200:
+            print("Could not get token")
+            raise Exception
+        
+        token = r.text
 
         return token
 
@@ -131,7 +135,7 @@ class Analyzer():
                 start = sentence["start"]
                 end = sentence["end"]
 
-                current_sentence = para[start:end]                    
+                current_sentence = para[start:end + 1]                    
                 sentences.append(current_sentence)
                 change += 1
             
@@ -139,7 +143,7 @@ class Analyzer():
             sentences.append("\n")
             # if change > 0:
             #     sentences[-1] = sentences[-1] + "\n"
-        
+        # print(sentences)
         return sentences
     
     def emotions_from_list(self, xs):
