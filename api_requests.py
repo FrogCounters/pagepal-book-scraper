@@ -238,18 +238,3 @@ def test(analyzer: Analyzer, text: str):
 
 def make_raw_filename(title):
     return title + ".json"
-
-def main():
-    testing = False
-    input_text = "I hate niggas."
-    expert_ai = Analyzer()
-  
-    if testing:
-        test(expert_ai, input_text)
-    
-    print(expert_ai.hate_from_string(input_text))
-
-    return
-
-if __name__ == "__main__":
-    main()
