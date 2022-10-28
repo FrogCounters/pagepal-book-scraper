@@ -14,18 +14,17 @@ def main():
     for file in os.listdir(JSON_SOURCE_DIR):
         with open(os.path.join(JSON_SOURCE_DIR, file), "r", encoding="utf8") as j:
             book_dict = json.load(j)
-
+            sentences = book_dict["text"]
             if os.path.exists(os.path.join(FINAL_JSON_DIR, file)):
                 print(file, "already exists in final directory, skipping...")
                 continue
-            
-            with open(os.path.join(TXT_SOURCE_DIR, book_dict["title"] + ".txt"), "r", encoding="utf8") as t:
-                sentences = [line for line in t]
-                emotions = EAI.emotions_from_list(sentences)
-                hate_speech = list(map(EAI.hate_from_string, sentences))
-                book_dict["text"] = sentences
-                book_dict["emotions"] = emotions
-                book_dict["hate_speech"] = hate_speech
+
+            emotions = EAI.emotions_from_list(sentences)
+            hate_speech = list(map(lambda x: "", sentences))
+            # hate_speech = list(map(EAI.hate_from_string, sentences))
+            book_dict["text"] = sentences
+            book_dict["emotions"] = emotions
+            book_dict["hate_speech"] = hate_speech
 
         with open(os.path.join(FINAL_TXT_DIR, book_dict["title"] + ".txt"), "w", encoding = "utf8") as final_t:
             for sentence in book_dict["text"]:

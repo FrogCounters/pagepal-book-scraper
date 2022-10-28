@@ -82,6 +82,15 @@ def save_html(data):
 
     return
 
+def reduce_newlines(sentences):
+    res = []
+    reduce = False
+    for sentence in sentences:
+        if not reduce or sentence != "\n":
+            res.append(sentence)
+            reduce = False
+        if sentence == "\n":
+            reduce = True
 
 def _save(title, url, text, emotions, hate_speech, author, main_img = ""):
 
@@ -90,21 +99,20 @@ def _save(title, url, text, emotions, hate_speech, author, main_img = ""):
     final_jsonpath = os.path.join(ANALYSED_DIR, title + ".json")
     clean_paras = text
 
-    if os.path.exists(jsonpath):
-        print(jsonpath, "already exists, skipping...")
+    if os.path.exists(final_jsonpath):
+        print(final_jsonpath, "already exists, skipping...")
         return
 
     sentences = EAI.split_para(clean_paras)
-    
+    sentences = reduce_newlines(sentences)
+
     with open(txtpath, "w", encoding = "utf-8") as f:
         for sentence in sentences:
             f.write(sentence)
 
-    sentences = [] #text now extracted from above file
     emotions = [] #moved to analyse_jsons
     hate_speech = [] #moved to analyse_jsons
     
-
     result_dic = {
         "title": title,
         "url": url,

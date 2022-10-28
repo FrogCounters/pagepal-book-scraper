@@ -115,6 +115,9 @@ class Analyzer():
             print("Splitting para", counter, "/", total)
             counter += 1
             change = 0
+            if len(para) == 0:
+                sentences.append("\n")
+                continue
             try:
                 raw_dis = self.disambiguation(para).json()["data"]
             except requests.exceptions.JSONDecodeError:
